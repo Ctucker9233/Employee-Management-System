@@ -1,0 +1,25 @@
+{
+  "name": "employee_management_system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "inquirer": "^7.0.0",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ctucker9233/Employee-Management-System.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ctucker9233/Employee-Management-System/issues"
+  },
+  "homepage": "https://github.com/Ctucker9233/Employee-Management-System#readme"
+}
