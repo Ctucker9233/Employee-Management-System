@@ -31,4 +31,13 @@ CREATE TABLE employee (
     FOREIGN KEY (role_id) REFERENCES employee_role(id) on DELETE CASCADE,
     FOREIGN KEY manager_id REFERENCES employee(id) on DELETE CASCADE,
     PRIMARY KEY (id)
-)
+);
+
+insert into department(name)
+values("Sales", "Engineering", "Finance")
+
+insert into employee_role(title, salary, department_id)
+values("Sales Manager", 30000, 1)
+
+insert into employee(first_name, last_name, role_id, manager_id)
+values("David", "Duarte", 1, null)
