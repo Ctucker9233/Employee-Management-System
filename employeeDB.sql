@@ -29,12 +29,12 @@ CREATE TABLE employee (
     index role_id (role_id),
     index manager_id (manager_id),
     FOREIGN KEY (role_id) REFERENCES employee_role(id) on DELETE CASCADE,
-    FOREIGN KEY manager_id REFERENCES employee(id) on DELETE CASCADE,
+    FOREIGN KEY (manager_id) REFERENCES employee(id) on DELETE CASCADE,
     PRIMARY KEY (id)
 );
 
 insert into department(name)
-values("Sales", "Engineering", "Finance")
+values("Sales")
 
 insert into employee_role(title, salary, department_id)
 values("Sales Manager", 30000, 1)
