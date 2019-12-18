@@ -32,7 +32,7 @@ function start() {
       type: "list",
       name: "task",
       message: "What would you like to do?",
-      choices: ["View All Employees", "View Employees By Department", "View Employees By Manager", "Update Employee Manager","Add New Employee", "Delete Employee", "View All Departments", "Add New Department", "View All Employee Roles", "Add New Employee Roles", "Exit"]
+      choices: ["View All Employees", "View Employees By Department", "Add New Employee", "Update Employee Role", "Delete Employee", "View All Departments", "Add New Department", "View All Employee Roles", "Add New Employee Roles", "Exit"]
     }
   ])
     .then(function ({ task }) {
@@ -45,6 +45,9 @@ function start() {
           break;
         case "Add New Employee":
           addEmployee();
+          break;
+        case "Update Employee Role":
+          updateEmployeeRole()
           break;
         case "Delete Employee":
           deleteEmployee();
@@ -72,7 +75,7 @@ function start() {
 
 }
 function viewEmployees() {
-  var query = "select employee.id, employee.first_name, employee.last_name, employee_role.title, department.name as 'Department', employee_role.salary, (select concat(first_name,' ',last_name) from employee where id in (select manager_id from employee)) as Manager from employee join employee_role on employee.role_id = employee_role.id join department on department.id = employee_role.department_id";
+  var query = "select employee.id, employee.first_name, employee.last_name, employee_role.title, department.name as 'Department', employee_role.salary, (select concat(employee.first_name, employee.last_name) from employee where employee.manager_id = employee.id ) as 'Manager' from employee join employee_role on employee.role_id = employee_role.id join department on department.id = employee_role.department_id;";
   connection.query(query, function (err, res) {
     if (err) throw err
     for (i = 0; i < res.length; i++) {
@@ -98,7 +101,7 @@ function viewEmployeesDept() {
       }
     ])
       .then(function ({ department }) {
-        var query = "select employee.id, employee.first_name, employee.last_name, employee_role.title, department.name as 'Department', employee_role.salary, (select concat(first_name,' ',last_name) from employee where id in (select manager_id from employee)) as Manager from employee join employee_role on employee.role_id = employee_role.id join department on department.id = employee_role.department_id where department.name = ?"
+        var query = "select employee.id, employee.first_name, employee.last_name, employee_role.title, department.name as 'Department', employee_role.salary, (select concat(employee.first_name, employee.last_name) from employee where employee.manager_id = employee.id ) as 'Manager' from employee join employee_role on employee.role_id = employee_role.id join department on department.id = employee_role.department_id where department.name = ?"
         connection.query(query, [department], function (err, res) {
           if (err) throw err
           for (i = 0; i < res.length; i++) {
@@ -295,8 +298,51 @@ function addRole() {
             start();
           })
         })
-
       })
   })
+}
 
+function updateEmployeeRole() {
+  connection.query("select title from employee_role", function (err, res) {
+    if (err) throw err
+    var role = []
+    var employee2 = []
+    for (i = 0; i < res.length; i++) {
+      role.push(res[i].title)
+    }
+    connection.query("select first_name, last_name from employee", function (err, res) {
+      if (err) throw err
+      for (j = 0; j < res.length; j++) {
+        var firstname = res[j].first_name;
+        var lastname = res[j].last_name
+        console.table(firstname + lastname)
+        employee2.push(firstname + " " + lastname)
+      }
+      inquirer.prompt([
+        {
+          type: "list",
+          name: "pickedEmployee",
+          message: "Choose an employee to update their role",
+          choices: employee2
+        },
+        {
+          type: "list",
+          name: "newRole",
+          message: "Choose a new role for this employee",
+          choices: role
+        }
+      ])
+      .then(function({pickedEmployee, newRole}){
+        connection.query("select id from employee_role where title = ?", [newRole], function(err, res){
+          if (err) throw err
+          var roleId = res[0].id
+          var name = pickedEmployee.split(" ")
+          connection.query("update employee set role_id = ? where first_name = ? and last_name = ?", [roleId, name[0], name[1]], function(err, res){
+            if (err) throw err
+            console.table(res)
+          })
+        })
+      })
+    })
+  })
 }
